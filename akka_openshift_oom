@@ -1,0 +1,15 @@
+Working with Lightbend Akka technologies in Openshift 3.11 cluster running on AWS
+
+Clustered stream actor event sourced durable behaviour kafka consumer producer java11 linux openjdk redhat
+
+Our service that had been working slowly but with stability in September started failing and triggering pod restarts on the Openshift cluster in October.  We had been through some Openshift patching at the end of September but this wasn't thought to be the cause of the issue.  We took heap dumps using yourkit agent running in the container, we monitored the jvm using Lightbend Prometheus/Grafana dashboards and pretty much no matter how much memory was allocated to the pod we got the dreaded 137 OOM_KILLED message.
+
+At one point we even got a private Openshift host allocated so that we would know that there was no other memory pressure being put on the host.
+
+We tried small pods with no heap minimum/maximum, large pods with set minimum/maximum and nothing made a difference.  OOM_score using cat /proc/1/oom_score was sometimes nearly 1,000 and other times it was 0 as oom_score_adjust was nearly -1,000.
+
+In the end.... I checked the JVM version we were using against other springboot, quarkus and JBOSS EAP pods that we were running on the same cluster.  The SB and Q pods were using an earlier version of JDK 11 and the JBOSS pods were using 11.0.14 LTS.  Checking on what we were currently using we were on 11.0.16 but how long had we been on this version??  Well looking back at the release images I could see that at the end of September the openjdk:11 latest tag was moved from 11.0.13 to 11.0.16.  Hmm very suspicious.
+
+It didn't take long for me to create a custom version of the service on the old jdk version and running the migration service against it (130,000 deals) it didn't fall over!!  So what a waste the last two weeks have been.
+
+Fix your java versions in your code people - don't just take "latest" or at least if you do - if you have issues then make it one of the first things you check/roll back if you're seeing heap allocation issues.
