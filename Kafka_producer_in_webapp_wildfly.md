@@ -21,7 +21,7 @@ I was getting IncompatibleClassChangeError which was strange as I wasn't changin
 
 In the end I created a generic AcmeObject with a couple of properties and low and behold it worked.  Ok now to find out why my real object didn't work.  I soon realised that the object that was working was in the web-app and so was the custom serializer.  The failing objects/serializers were in the adminservice.  After moving the AcmeObject and serializer to the admin service I could see they were failing as well.  Hmm. So I moved the serializer classes to the json-webapp module and finally they worked.
 
-
+'''
   ProducerRecord<String, RequestReplay> record
           = new ProducerRecord<>(CHAIN_RULE_TOPIC, chainRuleRequest.getKey(), chainRuleRequest);
   kafkaProducer.send(record, (recordMetadata, e) -> {
@@ -30,9 +30,8 @@ In the end I created a generic AcmeObject with a couple of properties and low an
       } else {
         // send failed - error in e
       }
-  });
-  
-  
+  });'''
+'''
 package com.stuff.json;
 
 import org.apache.kafka.common.errors.SerializationException;
@@ -57,19 +56,19 @@ public class RequestReplaySerializer implements Serializer<RequestReplay> {
             }
         }
     }
-}
+}'''
 
 In pom.xml
 
-  <dependency>
+'''  <dependency>
       <groupId>org.apache.kafka</groupId>
       <artifactId>kafka-clients</artifactId>
       <version>2.5.1</version>
-  </dependency>
+  </dependency>'''
 
 And also for testing this client library gives a mockproducer
 
-   MockProducer<String, RequestReplay> mockProducer
+'''   MockProducer<String, RequestReplay> mockProducer
            = new MockProducer<>(true, new StringSerializer(), new RequestReplaySerializer());
                 
-   assertEquals(1, mockProducer.history().size());
+   assertEquals(1, mockProducer.history().size());'''
