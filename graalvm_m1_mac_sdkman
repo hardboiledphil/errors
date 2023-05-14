@@ -1,0 +1,8 @@
+failed to get graalvm version m1 mac
+
+
+I was trying to get Quarkus native build working on M1 Mac.  Receiving error saying failed to get GRAALVM_HOME - so I set this to the root of the GraalVm directory in the .sdk/.. ../java/candidates directory.
+
+I then got an error about not being able to find native-image.  There was here https://maksimrv.medium.com/install-graalvm-on-macos-m1-1f7812a29c75 a mention of installing the graal installer but I was reticent to deploy an app just to install one thing.  Anyway I found that the bin directory of the graalvm folder has the gu binary so I just ran the gu command using this bin and it worked without having to install the gu application.
+
+~/.sdkman/candidates/java/22.3.r19-grl/bin/gu install native-image
