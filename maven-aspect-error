@@ -1,0 +1,30 @@
+[ERROR] Failed to execute goal org.codehaus.mojo:aspectj-maven-plugin:1.14.0:compile (default) on project common-formula: AJC compiler errors:
+[ERROR] error at
+[ERROR] requires org.aspectj.runtime;
+[ERROR]          ^^^^^^^^^^^^^^^^^^^
+[ERROR] /Users/phillip/dev/gitrepo/PROJECT-MODULE/src/main/java/module-info.java:3:0::0 org.aspectj.runtime cannot be resolved to a module
+[ERROR] error at
+[ERROR] requires org.slf4j;
+[ERROR]          ^^^^^^^^^
+
+Migrating a set of libraries from Java 11 to Java 21 I decided to get the module-info correct for all the projects.
+Some of them use aspectJ to alter classes for various reasons but I was getting tons of errors as above.
+Turns out aspectJ doesn't like module-info.java classes so I just exclude them from the aspectJ plugin
+
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>aspectj-maven-plugin</artifactId>
+                <configuration>
+                    <complianceLevel>${java.version}</complianceLevel>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <includes>
+                        <include>**/*.java</include>
+                        <include>**/*.aj</include>
+                    </includes>
+                    <excludes>
+                        <exclude>**/module-info.java</exclude>
+                    </excludes>
+                    <verbose>true</verbose>
+                    <Xlint>ignore</Xlint>
+                </configuration>
